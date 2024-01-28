@@ -19876,6 +19876,7 @@ void setup_leds()
 		nvram_set("AllLED", "1");
 
 		led_control(LED_POWER, LED_ON);
+		led_control(LED_POWER_RED, LED_OFF);
 
 #ifdef RTCONFIG_USB
 		start_usbled();

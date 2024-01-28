@@ -262,9 +262,12 @@ int update_wan_leds(int wan_unit, int link_wan_unit)
 	/* Turn on/off WAN LED in accordance with link status of WAN port */
 	if (link_wan_unit && !inhibit_led_on()) {
 		led_control(LED_WAN, LED_ON);
+		led_control(LED_WAN_RED, LED_OFF);
 	} else {
-		if(link_internet != 2)
+		if(link_internet != 2) {
 			led_control(LED_WAN, LED_OFF);
+			led_control(LED_WAN_RED, LED_ON);
+		}
 	}
 #endif	/* RTCONFIG_WANRED_LED */
 
@@ -331,7 +334,7 @@ void enable_wan_led()
 		}
 	}
 
-	led_control(LED_WAN, LED_OFF);
+	// led_control(LED_WAN, LED_OFF);
 #ifdef HND_ROUTER
 #ifdef GTAC2900
 	eval("sw", "0x800c00a0", "0");				// disable event on tx/rx activity
@@ -339,9 +342,11 @@ void enable_wan_led()
 	led_control(LED_WAN_NORMAL, LED_ON);
 #endif
 #else
-	eval("et", "-i", "eth0", "robowr", "0", "0x18", "0x01ff");
-	eval("et", "-i", "eth0", "robowr", "0", "0x1a", "0x01ff");
+	// eval("et", "-i", "eth0", "robowr", "0", "0x18", "0x01ff");
+	// eval("et", "-i", "eth0", "robowr", "0", "0x1a", "0x01ff");
 #endif
+	led_control(LED_WAN, LED_ON);
+	led_control(LED_WAN_RED, LED_OFF);
 }
 
 void disable_wan_led()
@@ -351,9 +356,11 @@ void disable_wan_led()
 #elif defined(HND_ROUTER)
 	led_control(LED_WAN_NORMAL, LED_OFF);
 #else
-	eval("et", "-i", "eth0", "robowr", "0", "0x18", "0x01fe");
-	eval("et", "-i", "eth0", "robowr", "0", "0x1a", "0x01fe");
+	// eval("et", "-i", "eth0", "robowr", "0", "0x18", "0x01fe");
+	// eval("et", "-i", "eth0", "robowr", "0", "0x1a", "0x01fe");
 #endif
+	led_control(LED_WAN, LED_OFF);
+	led_control(LED_WAN_RED, LED_OFF);
 }
 
 static void wan_led_control(int sig) {

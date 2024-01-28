@@ -422,11 +422,9 @@ int init_gpio(void)
 #if defined(RTCONFIG_WANLEDX2) || defined(RTAXE7800)
 		, "led_wan2_gpio"
 #endif
-#if defined(RTCONFIG_WANRED_LED)
 		, "led_wan_red_gpio"
 #if defined(RTCONFIG_WANLEDX2)
 		, "led_wan2_red_gpio"
-#endif
 #endif
 #if defined(RTCONFIG_R10G_LED)
 		, "led_r10g_gpio"
@@ -577,7 +575,6 @@ int init_gpio(void)
 				disable = !disable;
 		}
 #else
-#if defined(RTCONFIG_WANRED_LED)
 		/* If WAN RED LED is defined, keep it on until Internet connection ready in router mode. */
 		if (!strcmp(led_list[i], "led_wan_red_gpio") && is_router_mode())
 		{
@@ -587,7 +584,6 @@ int init_gpio(void)
 				disable = 1;
 #endif
 		}
-#endif
 #endif
 
 #if defined(RTCONFIG_SW_CTRL_ALLLED)

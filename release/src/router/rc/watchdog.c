@@ -462,6 +462,7 @@ void led_control_normal(void)
 
 #if !defined(RTCONFIG_CONCURRENTREPEATER)
 	led_control(LED_POWER, LED_ON);
+	led_control(LED_POWER_RED, LED_OFF);
 #endif
 #if defined(RTCONFIG_LOGO_LED) && !defined(GTAX11000) && !defined(GTAXE11000) && !defined(GTAX11000_PRO) && !defined(GTAXE16000)
 	led_control(LED_LOGO, LED_ON);
@@ -2444,6 +2445,7 @@ void service_check(void)
 		for(idx=0; idx < 6; idx++) {
 		    usleep(100*1000);
 		    led_control(LED_POWER, idx%2);
+			led_control(LED_POWER_RED, !(idx%2));
 		}
 	    }
 	    boot_ready++;
@@ -2451,6 +2453,7 @@ void service_check(void)
 	else
 #endif
 		led_control(LED_POWER, ++boot_ready%2);
+		led_control(LED_POWER_RED, !(boot_ready%2));
 }
 
 #ifdef RTAC88U
@@ -2826,6 +2829,7 @@ static inline void __handle_led_onoff_button(int led_onoff)
 #endif
 	if (led_onoff) {
 		led_control(LED_POWER, LED_ON);
+		led_control(LED_POWER_RED, LED_OFF);
 
 		kill_pidfile_s("/var/run/wanduck.pid", SIGUSR2);
 
@@ -2887,6 +2891,7 @@ static inline void __handle_led_onoff_button(int led_onoff)
 #endif
 	if (led_onoff) {
 		led_control(LED_POWER, LED_ON);
+		led_control(LED_POWER_RED, LED_OFF);
 		kill_pidfile_s("/var/run/wanduck.pid", SIGUSR2);
 #if defined(TUFAX3000_V2) || defined(RTAXE7800) || defined(EBG19_504)
 		bcm53134_led_control(2);
@@ -3310,10 +3315,14 @@ void btn_check(void)
 	/*--------------- Add BTN_RST MFG test ------------------------*/
 #ifndef RTCONFIG_WPS_RST_BTN
 #if defined(RTCONFIG_DSL) || defined(EBG15) || defined(EBG19) /* Paul add 2013/4/2 */
-			if ((btn_count % 2) == 0)
+			if ((btn_count % 2) == 0) {
 				led_control(LED_POWER, LED_ON);
-			else
+				led_control(LED_POWER_RED, LED_OFF);
+			}
+			else {
 				led_control(LED_POWER, LED_OFF);
+				led_control(LED_POWER_RED, LED_ON);
+			}
 #endif
 #endif	/* ! RTCONFIG_WPS_RST_BTN */
 			if (!btn_pressed)
@@ -3361,6 +3370,7 @@ void btn_check(void)
 				{
 #ifdef RTCONFIG_DSL_REMOTE
 					led_control(LED_POWER, LED_OFF);
+					led_control(LED_POWER_RED, LED_OFF);
 					alarmtimer(0, 0);
 					nvram_set("restore_defaults", "1");
 					if (notify_rc_after_wait("resetdefault")) {
@@ -3390,6 +3400,7 @@ void btn_check(void)
 #else	/* ! (RTN11P || RTN300) */
 					{
 						led_control(LED_POWER, LED_OFF);
+						led_control(LED_POWER_RED, LED_ON);
 #if defined(RTCONFIG_RGBLED) && defined(GTAC2900)
 						aura_led_control(AURA_LED_OFF);
 #endif
@@ -3397,6 +3408,7 @@ void btn_check(void)
 					else
 					{
 						led_control(LED_POWER, LED_ON);
+						led_control(LED_POWER_RED, LED_OFF);
 #if defined(RTCONFIG_RGBLED) && defined(GTAC2900)
 						aura_led_control(AURA_LED_RST);
 #endif
@@ -3429,6 +3441,7 @@ void btn_check(void)
 				{
 					// IT MUST BE SAME AS BELOW CODE
 					led_control(LED_POWER, LED_OFF);
+					led_control(LED_POWER_RED, LED_OFF);
 					alarmtimer(0, 0);
 					nvram_set("restore_defaults", "1");
 					if (notify_rc_after_wait("resetdefault")) {
@@ -3483,6 +3496,7 @@ void btn_check(void)
 					if (LED_status_on) {
 						TRACE_PT("LED turn to normal\n");
 						led_control(LED_POWER, LED_ON);
+						led_control(LED_POWER_RED, LED_OFF);
 #if defined(RTN11P_B1)
 						system("reg s 0xB0000000; reg w 0x64 0x30015014");
 						system("reg s 0xB0000600; reg w 0x04 0x1C20; reg w 0x24 0x69CB");
@@ -3526,6 +3540,7 @@ void btn_check(void)
 				if (!(btn_count < WPS_RST_DO_RESTORE_COUNT && btn_count >= WPS_RST_DO_WPS_COUNT && nvram_match("btn_ez_mode", "1")))
 #endif
 				led_control(LED_POWER, LED_ON);
+				led_control(LED_POWER_RED, LED_OFF);
 
 				btn_count = 0;
 				btn_pressed = 0;
@@ -3541,6 +3556,7 @@ void btn_check(void)
 #elif defined(RTCONFIG_FIXED_BRIGHTNESS_RGBLED)
 #else
 				led_control(LED_POWER, LED_ON);
+				led_control(LED_POWER_RED, LED_OFF);
 #endif
 				alarmtimer(NORMAL_PERIOD, 0);
 			}
@@ -3575,6 +3591,7 @@ void btn_check(void)
 				set_rgbled(RGBLED_RST_EVENT);
 #else
 				led_control(LED_POWER, LED_OFF);
+				led_control(LED_POWER_RED, LED_OFF);
 #if defined(RTCONFIG_RGBLED) && defined(GTAC2900)
 				aura_led_control(AURA_LED_OFF);
 #endif
@@ -3869,6 +3886,7 @@ void btn_check(void)
 			setAllLedNormal();
 #else
 			led_control(LED_POWER, LED_ON);
+			led_control(LED_POWER_RED, LED_OFF);
 
 #if defined(RTAC3200) || defined(RTCONFIG_BCM_7114) || defined(HND_ROUTER)
 #ifdef HND_ROUTER
@@ -4117,6 +4135,7 @@ void btn_check(void)
 
 		if (LED_status_on) {
 			led_control(LED_POWER, LED_ON);
+			led_control(LED_POWER_RED, LED_OFF);
 			eval("et", "robowr", "0", "0x18", "0x01ff");
 			eval("et", "robowr", "0", "0x1a", "0x01ff");
 			qcsapi_wifi_run_script("router_command.sh", "lan4_led_ctrl on");
@@ -5806,7 +5825,7 @@ void fake_etwan_led(void)
 #endif
 #endif	// RTCONFIG_FAKE_ETLAN_LED
 
-#if defined(RTCONFIG_WLAN_LED) || defined(RTN18U)
+#if defined(RTCONFIG_WLAN_LED) || defined(RTN18U) || defined(RTAC68U)
 unsigned long get_2g_count()
 {
 	FILE *f;
@@ -5885,7 +5904,7 @@ void fake_wl_led_2g(void)
 }
 #endif	/* RTCONFIG_WLAN_LED */
 
-#if defined(RTCONFIG_BRCM_USBAP) || defined(RTAC66U) || defined(BCM4352)
+#if defined(RTCONFIG_BRCM_USBAP) || defined(RTAC66U) || defined(BCM4352) || defined(RTAC68U)
 unsigned long get_5g_count()
 {
 	FILE *f;
@@ -6345,10 +6364,10 @@ void led_check(int sig)
 		get_gpio_values_once(1);
 	}
 
-#ifdef RTCONFIG_WLAN_LED
+#ifdef RTCONFIG_WLAN_LED || defined(RTAC68U)
 	if (nvram_contains_word("rc_support", "led_2g"))
 	{
-#if defined(RTN53)
+#if defined(RTN53) || defined(RTAC68U)
 		if (nvram_get_int("wl0_radio") == 0)
 			led_control(LED_2G, LED_OFF);
 		else
@@ -6439,13 +6458,13 @@ void led_check(int sig)
 		fake_dev_led(nvram_safe_get("mmc_irq"), LED_MMC);
 #endif
 
-#if defined(RTCONFIG_BRCM_USBAP) || defined(RTAC66U) || defined(BCM4352)
-#if defined(RTAC66U) || defined(BCM4352)
+#if defined(RTCONFIG_BRCM_USBAP) || defined(RTAC66U) || defined(BCM4352) || defined(RTAC68U)
+#if defined(RTAC66U) || defined(BCM4352) || defined(RTAC68U)
 	if (nvram_match("led_5g", "1") &&
 	   (wlonunit == -1 || wlonunit == 1))
 #endif
 	{
-#if defined(RTN53)
+#if defined(RTN53) || defined(RTAC68U)
 		if (nvram_get_int("wl1_radio") == 0)
 			led_control(LED_5G, LED_OFF);
 		else
@@ -6735,6 +6754,7 @@ void swmode_check()
 				flag_sw_mode=0;
 				/* sw mode changed: restore defaults */
 				led_control(LED_POWER, LED_OFF);
+				led_control(LED_POWER_RED, LED_OFF);
 				alarmtimer(0, 0);
 				nvram_set("restore_defaults", "1");
 				if (notify_rc_after_wait("resetdefault")) {	/* Send resetdefault rc_service failed. */
